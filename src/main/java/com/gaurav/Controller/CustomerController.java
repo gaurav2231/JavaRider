@@ -3,6 +3,7 @@ package com.gaurav.Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,7 @@ import com.gaurav.Repo.CustomerRepo;
 import com.gaurav.Service.CustomerService;
 
 
+
 @EnableCaching
 @RestController
 public class CustomerController {
@@ -30,11 +32,14 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 
-	static Map<String, Object> inMemoryDataMap=new HashMap<>();
+	public static Map<String, Object> inMemoryDataMap=new HashMap<>();
 
 	@PostMapping("/Register")
-	public ResponseEntity<Response> Register(@RequestBody Customer customer, CacheM cachem) {
-		
+	public ResponseEntity<Response> Register(@Valid @RequestBody Customer customer, CacheM cachem) throws Exception {
+		try {		if(customerRepo.existsByEmail(customer.getEmail())==false
+				&&
+				customerRepo.existsByPassword(customer.getPassword())==false)
+		{
 		Response response=new Response();
 		
     	String otp = customerService.getOtp();
@@ -44,16 +49,51 @@ public class CustomerController {
 		response.setMessage("Customer Registered Successfully!!!");
 		
 		return ResponseEntity.ok().body(response);
-	
+		}
+		else {
+			Response response=new Response();
+			response.setMessage("Customer Already Exists!!!");
+			return ResponseEntity.ok().body(response);
+
+		}
+		}
+		catch (Exception e) {
+			Response response=new Response();
+			response.setMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 	
 	
 	@PostMapping("Login")
-	public ResponseEntity<Response> Login(@RequestBody Customer customer) {
+	public ResponseEntity<Response> Login(@RequestBody Customer customer,CacheM cachem)throws Exception {
+		try {
 		Response response=new Response();
-		customerService.login(customer);
-		response.setMessage("Customer Login Successfully!!!");
-		return ResponseEntity.ok().body(response);
+		String otp = customerService.getOtp();
+		customerService.register(customer);
+		cachem.setOtp(otp);
+		inMemoryDataMap.put("otp", cachem);
+		customer.setEmail(customer.getEmail());
+		customer.setPassword(customer.getPassword());
+		if(customerRepo.existsByEmail(customer.getEmail())==true
+			&&
+			customerRepo.existsByPassword(customer.getPassword())==true)
+		{
+			response.setMessage("Login Successfully!!!");
+			   return ResponseEntity.ok().body(response);	
+        }
+		else {
+			response.setMessage("Invalid Credentials!!!");
+	            return ResponseEntity.badRequest().body(response);
+	     
+		}
+	}
+		catch (Exception e) {
+			Response response=new Response();
+			response.setMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+
+       }
 	}
 	
 	

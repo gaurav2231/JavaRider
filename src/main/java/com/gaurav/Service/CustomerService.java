@@ -6,7 +6,6 @@ public interface CustomerService {
 
 	public String getOtp();
 
-	void login(Customer customer);
 
 	void register(Customer customer);
 

@@ -24,11 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 		
 	}
 
-	@Override
-	public void login(Customer customer) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
 public void register(Customer customer) {

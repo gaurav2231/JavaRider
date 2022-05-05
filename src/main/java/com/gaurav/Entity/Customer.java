@@ -4,15 +4,21 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name="Customer")
+@Table(name="Customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"phoneNumber","email","userName"})})
+//@EntityListeners(AuditingEntityListener.class)
 public class Customer {
 
 	@Id
@@ -23,17 +29,20 @@ public class Customer {
 	@Type(type="org.hibernate.type.UUIDCharType")
     private UUID id;
 	
-	
+    @NotBlank (message = "name is required")
     private String name;
-	
+    
+    @NotBlank (message = "phoneNumber is required")
 	private String phoneNumber;
-	
-	private String email;
-	
+   @Email
+    private String email;
+    
+    @NotBlank (message = "userName is required")
 	private String userName;
-	
+    
+   @NotBlank (message = "password is required")
 	private String password;
-	
+    
 	private String location;
 
 
