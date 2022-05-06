@@ -11,13 +11,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name="Customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"phoneNumber","email","userName"})})
+@Table(name="Customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"phoneNumber","userName"})})
 //@EntityListeners(AuditingEntityListener.class)
 public class Customer {
 
@@ -33,8 +34,10 @@ public class Customer {
     private String name;
     
     @NotBlank (message = "phoneNumber is required")
+    @Size(min = 3, max = 10, message = "Size must between 3 and 10")
 	private String phoneNumber;
-   @Email
+    
+    @Email(message = "provide valid format")
     private String email;
     
     @NotBlank (message = "userName is required")
@@ -43,8 +46,32 @@ public class Customer {
    @NotBlank (message = "password is required")
 	private String password;
     
+   @NotBlank (message = "location is required")
 	private String location;
+	
+   @NotBlank (message = "latitude is required")
+	private String latitude;
 
+   @NotBlank (message = "longitude is required")
+	private String longitude;
+	
+
+
+	public String getLatitude() {
+	return latitude;
+}
+
+public void setLatitude(String latitude) {
+	this.latitude = latitude;
+}
+
+public String getLongitude() {
+	return longitude;
+}
+
+public void setLongitude(String longitude) {
+	this.longitude = longitude;
+}
 
 	public UUID getId() {
 		return id;

@@ -4,26 +4,24 @@ import java.util.Date;
 
 public class CacheM {
 
-	 private String otp;
-		
-		Date expiryTime =new Date(System.currentTimeMillis()+(1000*60*5));
+	private String otp;
 
-		public String getOtp() {
-			return otp;
-		}
+	Date expiryTime = new Date(System.currentTimeMillis() + (1000 * 60 * 5));
 
-		public void setOtp(String otp) {
-			this.otp = otp;
-		}
+	public String getOtp() {
+		return otp;
+	}
 
-		public Date getExpiryTime() {
-			return expiryTime;
-		}
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
 
-		public void setExpiryTime(Date expiryTime) {
-			this.expiryTime = expiryTime;
-		}
+	public Date getExpiryTime() {
+		return expiryTime;
+	}
 
-		
-		
+	public void setExpiryTime(Date expiryTime) {
+		this.expiryTime = expiryTime;
+	}
+
 }
