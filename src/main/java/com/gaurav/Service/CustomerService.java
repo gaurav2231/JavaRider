@@ -10,5 +10,7 @@ public interface CustomerService {
 	
 	public void sendEmail(String subject , String From , String To , String content);
 
+	public double calculateDistance(String source, String destination);
+
 
 }

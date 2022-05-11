@@ -6,26 +6,29 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gaurav.Entity.BookRide;
 import com.gaurav.Entity.CacheM;
 import com.gaurav.Entity.Customer;
+import com.gaurav.Entity.GetDriverInfoEntity;
 import com.gaurav.Entity.Response;
 import com.gaurav.Repo.CustomerRepo;
+import com.gaurav.Repo.RideRepo;
 import com.gaurav.Service.CustomerService;
 
-//@EnableCaching
 @RestController
-//@Slf4j
 public class CustomerController {
 
 	@Autowired
 	private CustomerRepo customerRepo;
+	
+	@Autowired
+	private RideRepo rideRepo;
 
 	@Autowired
 	private CustomerService customerService;
@@ -34,7 +37,8 @@ public class CustomerController {
 
 	@PostMapping("/Register")
 	public ResponseEntity<Response> Register(@Valid @RequestBody Customer customer, CacheM cachem) throws Exception {
-//		log.info(customer.toString());
+//		Runnable r = new Runnable() {
+//	         public void run() {
 		try {
 			if (customerRepo.existsByEmail(customer.getEmail()) == false
 					&& customerRepo.existsByPassword(customer.getPassword()) == false) {
@@ -57,13 +61,20 @@ public class CustomerController {
 			}
 		} catch (Exception e) {
 			Response response = new Response();
-			response.setMessage(e.getMessage());
+			response.setMessage(e.getLocalizedMessage());
 			return ResponseEntity.badRequest().body(response);
 		}
+//	        	 }
+//	     };
+//	     ExecutorService executor = Executors.newCachedThreadPool();
+//	     executor.submit(r);
+//	     executor.shutdown();
+//		return null;
 	}
 
 	@PostMapping("Login")
 	public ResponseEntity<Response> Login(@RequestBody Customer customer, CacheM cachem) throws Exception {
+
 		try {
 			Response response = new Response();
 
@@ -73,6 +84,8 @@ public class CustomerController {
 				String otp = customerService.getOtp();
 				cachem.setOtp(otp);
 				inMemoryDataMap.put("otp", cachem);
+				customerService.sendEmail("OTP", "gaurav.k@hashstudioz.com", customer.getEmail(),
+						"OTP is:" + cachem.getOtp());
 
 				response.setMessage("Login Successfully!!!");
 				return ResponseEntity.ok().body(response);
@@ -87,18 +100,6 @@ public class CustomerController {
 			return ResponseEntity.badRequest().body(response);
 
 		}
-	}
-
-	@GetMapping("/GenerateOTP")
-	@Cacheable(value = "otp")
-	public ResponseEntity<Object> otp(CacheM cachem) {
-		// Cache cache=new Cache();
-		String otp = customerService.getOtp();
-		// cache.setOt
-		// System.out.println(customerService.getOtp());
-		cachem.setOtp(otp);
-		inMemoryDataMap.put("otp", cachem);
-		return ResponseEntity.ok(cachem);
 	}
 
 	@PostMapping("/checkOtp")
@@ -119,5 +120,25 @@ public class CustomerController {
 
 		return inMemoryDataMap;
 	}
+
+	
+	@GetMapping("/getDriverInfo")
+	public ResponseEntity<GetDriverInfoEntity> getDriverInfo() {
+		GetDriverInfoEntity getDriverInfo = new GetDriverInfoEntity();
+
+		return ResponseEntity.ok().body(getDriverInfo);
+	}
+
+	@PostMapping("/bookride")
+	public ResponseEntity<BookRide> bookRide(@RequestBody BookRide bookRide) {
+		double Distance = customerService.calculateDistance(bookRide.getSource(),bookRide.getDestination());
+		bookRide.setDistance(Distance);
+		
+		BookRide ride= rideRepo.save(bookRide);
+		return ResponseEntity.ok().body(ride);
+	}
+	
+
+	
 
 }

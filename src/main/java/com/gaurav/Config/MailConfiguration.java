@@ -21,6 +21,7 @@ public class MailConfiguration {
 	        javaMailSender.setPort(Integer.valueOf(environment.getProperty("spring.mail.port")));
 	        javaMailSender.setUsername(environment.getProperty("spring.mail.username"));
 	        javaMailSender.setPassword(environment.getProperty("spring.mail.password"));
+	        
 	        Properties javaMailProperties = new Properties();
 	        javaMailProperties.put("mail.smtp.starttls.enable", "true");
 	        javaMailProperties.put("mail.smtp.auth", "true");

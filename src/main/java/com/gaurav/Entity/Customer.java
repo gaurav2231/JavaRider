@@ -1,21 +1,16 @@
 package com.gaurav.Entity;
 
-import java.util.UUID;
+import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name="Customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"phoneNumber","userName"})})
@@ -23,21 +18,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Customer {
 
 	@Id
-	@GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", 
-                      strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name="reference_id", columnDefinition = "char(36)")
-	@Type(type="org.hibernate.type.UUIDCharType")
-    private UUID id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(generator = "uuid2")
+//    @GenericGenerator(name = "uuid2", 
+//                      strategy = "org.hibernate.id.UUIDGenerator")
+//    @Column(name="reference_id", columnDefinition = "char(36)")
+//	@Type(type="org.hibernate.type.UUIDCharType")
+    private int id;
 	
     @NotBlank (message = "name is required")
     private String name;
     
     @NotBlank (message = "phoneNumber is required")
-    @Size(min = 3, max = 10, message = "Size must between 3 and 10")
 	private String phoneNumber;
     
-    @Email(message = "provide valid format")
+   @Email
     private String email;
     
     @NotBlank (message = "userName is required")
@@ -49,35 +44,14 @@ public class Customer {
    @NotBlank (message = "location is required")
 	private String location;
 	
-   @NotBlank (message = "latitude is required")
-	private String latitude;
-
-   @NotBlank (message = "longitude is required")
-	private String longitude;
-	
-
-
-	public String getLatitude() {
-	return latitude;
-}
-
-public void setLatitude(String latitude) {
-	this.latitude = latitude;
-}
-
-public String getLongitude() {
-	return longitude;
-}
-
-public void setLongitude(String longitude) {
-	this.longitude = longitude;
-}
-
-	public UUID getId() {
+     @OneToMany(mappedBy = "customer")
+     private Set<BookRide> bookRide;
+     
+	public int getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -129,7 +103,7 @@ public void setLongitude(String longitude) {
 		this.location = location;
 	}
 
-	public Customer(UUID id, String name, String phoneNumber, String email, String userName, String password,
+	public Customer(int id, String name, String phoneNumber, String email, String userName, String password,
 			String location) {
 		super();
 		this.id = id;

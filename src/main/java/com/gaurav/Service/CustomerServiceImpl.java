@@ -51,6 +51,28 @@ public class CustomerServiceImpl implements CustomerService {
 		        }catch(MessagingException mex) {
 		        	mex.printStackTrace();
 		        }
+		}
+
+		@Override
+		public double calculateDistance(String source, String destination) {
+			double slat = Double.parseDouble(source.split(",")[0]);
+			double slong = Double.parseDouble(source.split(",")[1]);
+
+			double dlat = Double.parseDouble(destination.split(",")[0]);
+			double dlong = Double.parseDouble(destination.split(",")[1]);
+
+			final double R = 6371e3;
+			final double A = slat * Math.PI / 180;
+			final double B = dlat * Math.PI / 180;
+			final double calculate1 = (dlat - slat) * Math.PI / 180;
+			final double calculate2 = (dlong - slong) * Math.PI / 180;
+
+			final double a = Math.sin(calculate1 / 2) * Math.sin(calculate1 / 2)
+					+ Math.cos(A) * Math.cos(B) * Math.sin(calculate2 / 2) * Math.sin(calculate2 / 2);
+			final double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+			final double d = R * c;
+			return d/1000;
 		}     
 }	 
 		 
